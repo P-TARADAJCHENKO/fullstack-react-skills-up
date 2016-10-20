@@ -13,10 +13,10 @@ const ProductList = React.createClass({
         });
         this.setState({ products: products });
     },
-    handleProductUpVote: function (productId) {
+    handleProductVote: function (productId, vote) {
         Data.forEach((el) => {
             if (el.id === productId) {
-                el.votes = el.votes + 1;
+                el.votes = el.votes + vote;
                 return;
             }
         });
@@ -34,7 +34,7 @@ const ProductList = React.createClass({
                     votes={product.votes}
                     submitter_avatar_url={product.submitter_avatar_url}
                     product_image_url={product.product_image_url}
-                    onVote={this.handleProductUpVote}
+                    onVote={this.handleProductVote}
                 />
             );
         });
@@ -48,7 +48,10 @@ const ProductList = React.createClass({
 
 const Product = React.createClass({
     handleUpVote: function () {
-        this.props.onVote(this.props.id);
+        this.props.onVote(this.props.id, 1);
+    },
+    handleDownVote: function () {
+        this.props.onVote(this.props.id, -1);
     },
     render: function () {
         return (
@@ -65,7 +68,6 @@ const Product = React.createClass({
                         <a onClick={this.handleDownVote}>
                             <i className="large caret down icon"></i>
                         </a>
-
                     </div>
                     <div className="description">
                         <a href={this.props.url}>
