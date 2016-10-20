@@ -2,16 +2,20 @@ const ProductList = React.createClass({
     getInitialState: function () {
         return {
             products: [],
+            sort: -1
         };
     },
     componentDidMount: function () {
-        this.updateState();
+        this.updateState(this.state.sort);
     },
-    updateState: function () {
+    updateState: function (sort) {
         const products = Data.sort((a, b) => {
-            return b.votes - a.votes;
+            return sort * (a.votes - b.votes);
         });
-        this.setState({ products: products });
+        this.setState({
+            products: products,
+            sort: sort
+        });
     },
     handleProductVote: function (productId, vote) {
         Data.forEach((el) => {
@@ -20,7 +24,11 @@ const ProductList = React.createClass({
                 return;
             }
         });
-        this.updateState();
+        this.updateState(this.state.sort);
+    },
+    toggleSort: function () {
+        let sort = this.state.sort * -1;
+        this.updateState(sort);
     },
     render: function () {
         const products = this.state.products.map((product) => {
@@ -40,6 +48,9 @@ const ProductList = React.createClass({
         });
         return (
             <div className="ui items">
+                <a onClick={this.toggleSort}>
+                    <i className="large sort icon"></i>
+                </a>
                 {products}
             </div>
         );
