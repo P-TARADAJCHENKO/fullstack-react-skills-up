@@ -25,6 +25,9 @@ const TimerDashboard = React.createClass({
     handleEditFormSubmit: function (attrs) {
         this.updateTimer(attrs);
     },
+    handleTimerDelete: function (attrs) {
+        this.deleteTimer(attrs);
+    },
     createTimer: function (timer) {
         const t = helpers.newTimer(timer);
         this.setState({
@@ -45,6 +48,13 @@ const TimerDashboard = React.createClass({
             })
         });
     },
+    deleteTimer: function (attrs) {
+        this.setState({
+            timers: this.state.timers.filter((timer) => {
+                return timer.id !== attrs.id;
+            })
+        })
+    },
     render: function () {
         return (
             <div className="ui three column centered grid">
@@ -52,6 +62,7 @@ const TimerDashboard = React.createClass({
                     <EditableTimerList
                         timers={this.state.timers}
                         onFormSubmit={this.handleEditFormSubmit}
+                        onTimerDelete={this.handleTimerDelete}
                     />
                     <ToggleableTimerForm
                         onFormSubmit={this.handleCreateFormSubmit}
@@ -73,6 +84,7 @@ const EditableTimerList = React.createClass({
                 elapsed={timer.elapsed}
                 runningSince={timer.runningSince}
                 onFormSubmit={this.props.onFormSubmit}
+                onTimerDelete={this.props.onTimerDelete}
             />
         ));
         return (
@@ -98,6 +110,9 @@ const EditableTimer = React.createClass({
     handleSubmit: function (timer) {
         this.props.onFormSubmit(timer);
         this.closeForm();
+    },
+    handleTimerDelete: function (attrs) {
+        this.props.onTimerDelete(attrs);
     },
     closeForm: function () {
         this.setState({ editFormOpen: false });
@@ -125,6 +140,7 @@ const EditableTimer = React.createClass({
                     elapsed={this.props.elapsed}
                     runningSince={this.props.runningSince}
                     onEditClick={this.handleEditClick}
+                    onTimerDelete={this.handleTimerDelete}
                 />
             );
         }
@@ -218,6 +234,11 @@ const ToggleableTimerForm = React.createClass({
 });
 
 const Timer = React.createClass({
+    handleDelete: function () {
+        this.props.onTimerDelete({
+            id: this.props.id,
+        });
+    },
     render: function () {
         const elapsedString = helpers.renderElapsedString(this.props.elapsed);
         return (
@@ -241,7 +262,10 @@ const Timer = React.createClass({
                         >
                             <i className="edit icon"></i>
                         </span>
-                        <span className="right floated trash icon">
+                        <span
+                            className="right floated trash icon"
+                            onClick={this.handleDelete}
+                        >
                             <i className="trash icon"></i>
                         </span>
                     </div>
